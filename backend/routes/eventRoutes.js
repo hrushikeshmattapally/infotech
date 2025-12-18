@@ -19,20 +19,31 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
+      // 🔍 Debug logs (VERY IMPORTANT FOR RENDER)
+      console.log("CREATE EVENT BODY:", req.body);
+      console.log("CREATE EVENT FILE:", req.file);
+
       const { title, description, dateTime, location, capacity } = req.body;
+
+      // Basic validation (prevents silent crashes)
+      if (!title || !description || !dateTime || !location || !capacity) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
 
       const event = await Event.create({
         title,
         description,
         dateTime,
         location,
-        capacity,
+        capacity: Number(capacity),
         image: req.file ? req.file.path : null,
         createdBy: req.user._id,
       });
 
       res.status(201).json(event);
     } catch (error) {
+      // 🚨 This will FINALLY show the real error in Render logs
+      console.error("CREATE EVENT ERROR:", error);
       res.status(500).json({ message: error.message });
     }
   }
@@ -56,6 +67,7 @@ router.get("/", async (req, res) => {
 
     res.json(events);
   } catch (error) {
+    console.error("GET EVENTS ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -86,6 +98,7 @@ router.post("/:id/rsvp", authMiddleware, async (req, res) => {
 
     res.json({ message: "Successfully joined event" });
   } catch (error) {
+    console.error("RSVP ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -111,6 +124,7 @@ router.post("/:id/unrsvp", authMiddleware, async (req, res) => {
 
     res.json({ message: "Successfully left event" });
   } catch (error) {
+    console.error("UNRSVP ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 });
