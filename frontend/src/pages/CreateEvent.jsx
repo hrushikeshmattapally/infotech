@@ -9,12 +9,27 @@ function CreateEvent() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
-    Object.keys(form).forEach((key) => data.append(key, form[key]));
+  e.preventDefault();
+
+  const data = new FormData();
+  data.append("title", form.title);
+  data.append("description", form.description);
+  data.append("dateTime", form.dateTime);
+  data.append("location", form.location);
+  data.append("capacity", form.capacity);
+
+  if (form.image) {
+    data.append("image", form.image);
+  }
+
+  try {
     await API.post("/events", data);
     window.location.href = "/";
-  };
+  } catch (err) {
+    alert(err.response?.data?.message || "Failed to create event");
+  }
+};
+
 
   return (
     <div className="form">
@@ -24,7 +39,7 @@ function CreateEvent() {
         <input name="description" placeholder="Description" onChange={handleChange} />
         <input name="dateTime" type="datetime-local" onChange={handleChange} />
         <input name="location" placeholder="Location" onChange={handleChange} />
-        <input name="capacity" placeholder="Capacity" onChange={handleChange} />
+        <input name="capacity" type="number" placeholder="Capacity" min="1" required onChange={handleChange} />
         <input type="file" name="image" onChange={(e) => setForm({ ...form, image: e.target.files[0] })} />
         <button style={{ width: "100%", marginTop: 15 }}>Create</button>
       </form>
