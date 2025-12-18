@@ -5,61 +5,43 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
     try {
       const res = await API.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
       window.location.href = "/";
     } catch (err) {
-      if (err.response) {
-        setError(err.response.data.message || "Login failed");
-      } else {
-        setError("Server not reachable. Try again later.");
-      }
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div className="form">
+    <div className="form-card">
       <h2>Login</h2>
 
-      {error && (
-        <p style={{ color: "red", marginBottom: "10px", fontSize: "14px" }}>
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: "#dc2626", marginBottom: 10 }}>{error}</p>}
 
       <form onSubmit={handleSubmit}>
+        <label>Email</label>
         <input
           type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           required
+          onChange={(e) => setEmail(e.target.value)}
         />
 
+        <label style={{ marginTop: 12 }}>Password</label>
         <input
           type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           required
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button
-          type="submit"
-          style={{ width: "100%", marginTop: "15px" }}
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
+        <button style={{ width: "100%", marginTop: 20 }}>
+          Login
         </button>
       </form>
     </div>

@@ -1,6 +1,6 @@
 import API from "../services/api";
 
-// Get logged-in user ID from JWT
+// Extract userId from JWT
 const getUserIdFromToken = () => {
   const token = localStorage.getItem("token");
   if (!token) return null;
@@ -21,7 +21,7 @@ function EventCard({ event }) {
       window.location.reload();
     } catch (err) {
       if (err.response?.status === 401) {
-        alert("Please login first");
+        alert("Please login to RSVP");
         window.location.href = "/login";
       } else {
         alert(err.response?.data?.message || "Something went wrong");
@@ -30,7 +30,7 @@ function EventCard({ event }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this event?")) return;
+    if (!window.confirm("Delete this event permanently?")) return;
 
     try {
       await API.delete(`/events/${event._id}`);
@@ -43,36 +43,48 @@ function EventCard({ event }) {
 
   return (
     <div className="event-card">
-      {event.image && <img src={event.image} alt="event" />}
+      {/* IMAGE */}
+      {event.image && <img src={event.image} alt={event.title} />}
 
-      <h3>{event.title}</h3>
-      <p>{event.description}</p>
-      <p><strong>Location:</strong> {event.location}</p>
-      <p>
-        <strong>Attendees:</strong> {event.attendees.length}/{event.capacity}
-      </p>
+      {/* CONTENT */}
+      <div className="event-content">
+        <h3>{event.title}</h3>
 
-      <button
-        onClick={handleRSVP}
-        disabled={event.attendees.length >= event.capacity}
-        style={{ width: "100%", marginTop: 8 }}
-      >
-        {event.attendees.length >= event.capacity ? "Event Full" : "RSVP"}
-      </button>
+        <div className="event-meta">
+          📍 {event.location} <br />
+          📅 {new Date(event.dateTime).toLocaleString()}
+        </div>
 
-      {/* DELETE BUTTON – ONLY FOR CREATOR */}
-      {userId === event.createdBy._id && (
+        <p style={{ fontSize: "14px", marginTop: "6px" }}>
+          {event.description}
+        </p>
+
+        <p className="event-meta" style={{ marginTop: "10px" }}>
+          👥 {event.attendees.length} / {event.capacity} attending
+        </p>
+      </div>
+
+      {/* ACTIONS */}
+      <div className="event-actions">
         <button
-          onClick={handleDelete}
-          style={{
-            width: "100%",
-            marginTop: 8,
-            backgroundColor: "#dc2626",
-          }}
+          onClick={handleRSVP}
+          disabled={event.attendees.length >= event.capacity}
+          style={{ width: "100%" }}
         >
-          Delete Event
+          {event.attendees.length >= event.capacity ? "Event Full" : "RSVP"}
         </button>
-      )}
+
+        {/* DELETE ONLY FOR CREATOR */}
+        {userId === event.createdBy._id && (
+          <button
+            className="delete-btn"
+            onClick={handleDelete}
+            style={{ width: "100%" }}
+          >
+            Delete Event
+          </button>
+        )}
+      </div>
     </div>
   );
 }

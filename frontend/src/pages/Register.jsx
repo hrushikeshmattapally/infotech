@@ -6,68 +6,50 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
     try {
-      const res = await API.post("/auth/register", { name, email, password });
+      const res = await API.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
       localStorage.setItem("token", res.data.token);
       window.location.href = "/";
     } catch (err) {
-      if (err.response) {
-        setError(err.response.data.message || "Registration failed");
-      } else {
-        setError("Server not reachable. Try again later.");
-      }
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="form">
+    <div className="form-card">
       <h2>Create Account</h2>
 
-      {error && (
-        <p style={{ color: "red", marginBottom: "10px", fontSize: "14px" }}>
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: "#dc2626", marginBottom: 10 }}>{error}</p>}
 
       <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <label>Name</label>
+        <input required onChange={(e) => setName(e.target.value)} />
 
+        <label style={{ marginTop: 12 }}>Email</label>
         <input
           type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           required
+          onChange={(e) => setEmail(e.target.value)}
         />
 
+        <label style={{ marginTop: 12 }}>Password</label>
         <input
           type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           required
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button
-          type="submit"
-          style={{ width: "100%", marginTop: "15px" }}
-          disabled={loading}
-        >
-          {loading ? "Creating account..." : "Register"}
+        <button style={{ width: "100%", marginTop: 20 }}>
+          Register
         </button>
       </form>
     </div>

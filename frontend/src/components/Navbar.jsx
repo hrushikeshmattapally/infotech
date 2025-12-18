@@ -10,11 +10,12 @@ function Navbar() {
 
   return (
     <div className="navbar">
-      <h2>Eventify</h2>
+      <h1>Eventify</h1>
 
       <div className="nav-links">
-        <Link to="/">Home</Link>
-        {token && <Link to="/create">Create Event</Link>}
+        <Link to="/">Events</Link>
+
+        {token && <Link to="/create">Create</Link>}
         {!token && <Link to="/login">Login</Link>}
         {!token && <Link to="/register">Register</Link>}
         {token && <button onClick={handleLogout}>Logout</button>}
